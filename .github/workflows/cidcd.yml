@@ -2,6 +2,8 @@ name: CI/CD Docker
 
 on:
   push:
+    tags:
+        - "v*.*.*"
     branches: [ "main" ]
 
 jobs:
@@ -36,3 +38,13 @@ jobs:
 
       - name: Docker Publish SemVer Tags
         uses: flownative/action-docker-publish-semver@v1.2.0
+        with:
+          tag_latest: true
+          source_registry_endpoint: https://docker.pkg.github.com/v2/
+          target_registry_endpoint: https://index.docker.io/v1/
+          source_registry_username: ${{ github.actor }}
+          source_registry_password: ${{ secrets.GITHUB_TOKEN }}
+          source_image_name: <owner>/<repo>/<image-name>
+          target_registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          target_registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          target_image_name: <user>/<image-name>
