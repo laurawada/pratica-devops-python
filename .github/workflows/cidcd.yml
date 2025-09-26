@@ -31,8 +31,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:${{ github.sha }}
 
   # ------------------------------
   # Job 2: Versionamento SemVer
@@ -57,8 +57,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:${{ github.ref_name }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:latest
 
       - name: Docker Publish SemVer Tags
         uses: flownative/action-docker-publish-semver@v1.2.0
@@ -68,7 +68,7 @@ jobs:
           target_registry_endpoint: https://index.docker.io/v1/
           source_registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
           source_registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          source_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/atividade
+          source_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python
           target_registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
           target_registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          target_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/atividade
+          target_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python
