@@ -2,39 +2,63 @@ name: CI/CD Docker
 
 on:
   push:
+    branches:
+      - main        # build da branch main
     tags:
-        - "v*.*.*"
-    branches: [ "main" ]
+      - "v*.*.*"    # versionamento SemVer
 
 jobs:
-  
-  build-and-push:
-    
+
+  # ------------------------------
+  # Job 1: Build e push na branch main
+  # ------------------------------
+  build-main:
     runs-on: ubuntu-latest
-    
-    
+    if: github.ref == 'refs/heads/main'
     steps:
-      
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          
           context: .
-          
           push: true
-          
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:latest, ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:${{ github.sha }}, ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:${{ github.ref_name }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:${{ github.sha }}
+
+  # ------------------------------
+  # Job 2: Versionamento SemVer
+  # ------------------------------
+  semver-tags:
+    needs: build-main
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image for tag
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/atividade:latest
 
       - name: Docker Publish SemVer Tags
         uses: flownative/action-docker-publish-semver@v1.2.0
@@ -44,7 +68,7 @@ jobs:
           target_registry_endpoint: https://index.docker.io/v1/
           source_registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
           source_registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          source_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python
+          source_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/atividade
           target_registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
           target_registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          target_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python
+          target_image_name: ${{ secrets.DOCKERHUB_USERNAME }}/atividade
