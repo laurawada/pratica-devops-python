@@ -33,3 +33,6 @@ jobs:
           push: true
           
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:latest, ${{ secrets.DOCKERHUB_USERNAME }}/pratica-devops-python:${{ github.sha }}
+
+      - name: Docker Publish SemVer Tags
+        uses: flownative/action-docker-publish-semver@v1.2.0
